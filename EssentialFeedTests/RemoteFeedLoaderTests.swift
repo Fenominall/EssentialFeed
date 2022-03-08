@@ -9,14 +9,16 @@ import XCTest
 
 class RemoteFeedLoader {
     let client: HTTPClient
+    let url: URL
     
-    init(client: HTTPClient) {
+    init(urL: URL, client: HTTPClient) {
+        self.url = urL
         self.client = client
     }
     
     func load() {
         // Step 2: Move the test logic from the RemoteFeedLoader to HTTPClient
-        client.get(from: URL(string: "https://a-url.com")!)
+        client.get(from: url)
     }
 }
 
@@ -52,7 +54,8 @@ class RemoteFeedLoaderTests: XCTestCase {
     func test_init_doesNotRequestDataFromURL() {
         // Step 4: Swap the HTTPCLient shared instance with the spy subclass during tests.
         let client = HTTClientSpy()
-        _ = RemoteFeedLoader(client: client)
+        let url = URL(string: "https://a-url.com")!
+        _ = RemoteFeedLoader(urL: url, client: client)
         
         // We are asserting that we didn't make a URL request since that should only happen when '.load()' is invoked.
         XCTAssertNil(client.requestedURL)
@@ -64,12 +67,14 @@ class RemoteFeedLoaderTests: XCTestCase {
     // Property injection
     // Method injection
     func test_load_requestDataFromURL() {
+        let url = URL(string: "https://a-given-url.com")!
         // Given a client and sut
         let client = HTTClientSpy()
-        let sut = RemoteFeedLoader(client: client)
+        let sut = RemoteFeedLoader(urL: url, client: client)
         // When we invoke sut.load()
         sut.load()
         // Then assert that a URL request was initiated in the client
-        XCTAssertNotNil(client.requestedURL)
+        // The 'url' should match the requestedURL
+        XCTAssertEqual(client.requestedURL, url)
     }
 }
