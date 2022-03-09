@@ -12,7 +12,7 @@ import EssentialFeed
 
 class RemoteFeedLoaderTests: XCTestCase {
     
-    // Naming test_"the method which is tested"_"the name of expected behaviour"
+    // Naming test_"the method which is tested"_"the name of expected behavior"
     func test_init_doesNotRequestDataFromURL() {
         // Step 4: Swap the HTTPCLient shared instance with the spy subclass during tests.
         let (_, client) = makeSUT()
@@ -47,14 +47,16 @@ class RemoteFeedLoaderTests: XCTestCase {
     
     func test_load_deliversErrorOnClientError() {
         let (sut, client) = makeSUT()
-        client.error = NSError(domain: "Test", code: 0)
         // Check that it have only one error in an array.
         var capturedErrors = [RemoteFeedLoader.Error]()
         sut.load { capturedErrors.append($0) }
         
+        let clientError = NSError(domain: "Test", code: 0)
+        client.completions[0](clientError)
+
+        // Comparing that capturedErrors is just on error
         XCTAssertEqual(capturedErrors, [.connectivity])
     }
-    
     
     // MARK: - Helpers
     // factory function to make a generic SUT
@@ -73,12 +75,10 @@ class RemoteFeedLoaderTests: XCTestCase {
         // var requestedURL: URL?
         // Checking if the same URL is loaded twice
         var requestedURLs = [URL]()
-        var error: Error?
+        var completions = [(Error) -> Void]()
         
         func get(from url: URL, completion: @escaping (Error) -> Void) {
-            if let error = error {
-                completion(error)
-            }
+            completions.append(completion)
             requestedURLs.append(url)
         }
     }
