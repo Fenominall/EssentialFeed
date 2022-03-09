@@ -58,6 +58,18 @@ class RemoteFeedLoaderTests: XCTestCase {
         XCTAssertEqual(capturedErrors, [.connectivity])
     }
     
+    func test_load_deliversErrorOnNon200HTTPResponse() {
+        let (sut, client) = makeSUT()
+        // Check that it have only one error in an array.
+        var capturedErrors = [RemoteFeedLoader.Error]()
+        sut.load { capturedErrors.append($0) }
+        
+        client.complete(withStatusCode: 400)
+
+        // Comparing that capturedErrors is just on error
+        XCTAssertEqual(capturedErrors, [.invalidData])
+    }
+    
     // MARK: - Helpers
     // factory function to make a generic SUT
     private func makeSUT(
@@ -83,14 +95,25 @@ class RemoteFeedLoaderTests: XCTestCase {
         // In this case, calling the method
         // '.get(from url:, completion:)'
         //        "is the message"
-        private var messages = [(url: URL, completion: (Error) -> Void)]()
+        private var messages = [(url: URL, completion: (Error?, HTTPURLResponse?) -> Void)]()
         
-        func get(from url: URL, completion: @escaping (Error) -> Void) {
+        func get(from url: URL, completion: @escaping (Error?, HTTPURLResponse?) -> Void) {
             messages.append((url, completion))
         }
         
         func complete(with error: Error, at index: Int = 0) {
-            messages[index].completion(error)
+            messages[index].completion(error, nil)
+        }
+        // Response for the status code error
+        func complete(withStatusCode code: Int, at index: Int = 0) {
+            let response = HTTPURLResponse(
+                // grabbing the url from the mapped requestedURLs
+                url: requestedURLs[index],
+                // invoking the passed status code
+                statusCode: code,
+                httpVersion: nil,
+                headerFields: nil)
+            messages[index].completion(nil, response)
         }
     }
 
