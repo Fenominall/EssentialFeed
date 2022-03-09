@@ -10,7 +10,7 @@ import Foundation
 
 // Protocol for a better control
 public protocol HTTPClient {
-    func get(from url: URL)
+    func get(from url: URL, completion: @escaping (Error) -> Void)
 }
 
 // We don`t need to start by confirming to the <FeedLoader> protocol
@@ -19,14 +19,20 @@ public final class RemoteFeedLoader {
     private let url: URL
     private let client: HTTPClient
     
+    public enum Error: Swift.Error {
+        case connectivity
+    }
+    
     public init(urL: URL, client: HTTPClient) {
         self.url = urL
         self.client = client
     }
     
-    public func load() {
+    public func load(completion: @escaping (Error) -> Void = { _ in}) {
         // Step 2: Move the test logic from the RemoteFeedLoader to HTTPClient
-        client.get(from: url)
+        client.get(from: url) { error in
+            completion(.connectivity)
+        }
     }
 }
 
