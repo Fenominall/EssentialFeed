@@ -6,37 +6,9 @@
 //
 
 import XCTest
-
-class RemoteFeedLoader {
-    let client: HTTPClient
-    let url: URL
-    
-    init(urL: URL, client: HTTPClient) {
-        self.url = urL
-        self.client = client
-    }
-    
-    func load() {
-        // Step 2: Move the test logic from the RemoteFeedLoader to HTTPClient
-        client.get(from: url)
-    }
-}
-
-//class HTTPClient {
-//    // Step 1: Make the shared instance a variable, so the class can be subleased
-//    static var shared = HTTPClient()
-//
-//    // Step 5: Remove HTTPClient private initializer since it`s not a Singleton anymore.
-//    // private init() {}
-//    // Step 2: Move the test logic from the RemoteFeedLoader to HTTPClient
-//    func get(from url: URL) {
-//    }
-//}
-
-// Protocol for a better control
-protocol HTTPClient {
-    func get(from url: URL)
-}
+// A better approach, when possible, is to test the module through the public interfaces, so we can test the expected behavior as a client of the module.
+// @testable Benefit: we`are free to change the implementation and private implementation details without breaking the tests
+import EssentialFeed
 
 class RemoteFeedLoaderTests: XCTestCase {
     
