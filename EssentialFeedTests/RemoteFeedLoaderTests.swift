@@ -12,6 +12,7 @@ import EssentialFeed
 
 class RemoteFeedLoaderTests: XCTestCase {
     
+    // Naming test_"the method which is tested"_"the name of expected behaviour"
     func test_init_doesNotRequestDataFromURL() {
         // Step 4: Swap the HTTPCLient shared instance with the spy subclass during tests.
         let (_, client) = makeSUT()
