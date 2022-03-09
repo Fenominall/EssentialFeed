@@ -17,7 +17,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         // Step 4: Swap the HTTPCLient shared instance with the spy subclass during tests.
         let (_, client) = makeSUT()
         // We are asserting that we didn't make a URL request since that should only happen when '.load()' is invoked.
-        XCTAssertNil(client.requestedURL)
+        XCTAssertTrue(client.requestedURLs.isEmpty)
     }
     
     // Three types of injection can be done
@@ -32,7 +32,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         // Then assert that a URL request was initiated in the client
         // The 'url' should match the requestedURL
         // When testing objects collaborating, asserting the values passed is not enough. We also need to ask "how many times was the method invoked?"
-        XCTAssertEqual(client.requestedURL, url)
+        XCTAssertEqual(client.requestedURLs, [url])
     }
     
     func test_loadTwice_requestDataFromURLTwice() {
@@ -60,11 +60,12 @@ class RemoteFeedLoaderTests: XCTestCase {
 
     private class HTTClientSpy: HTTPClient {
         // Step 3: Move the test logic to a new subclass of HTTPClient.
-        var requestedURL: URL?
+        // var requestedURL: URL?
+        // Checking if the same URL is loaded twice
         var requestedURLs = [URL]()
         
         func get(from url: URL) {
-            requestedURL = url
+            // requestedURL = url
             requestedURLs.append(url)
         }
     }

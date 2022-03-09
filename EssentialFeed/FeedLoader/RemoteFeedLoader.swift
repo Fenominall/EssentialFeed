@@ -27,7 +27,6 @@ public final class RemoteFeedLoader {
     public func load() {
         // Step 2: Move the test logic from the RemoteFeedLoader to HTTPClient
         client.get(from: url)
- 
     }
 }
 
