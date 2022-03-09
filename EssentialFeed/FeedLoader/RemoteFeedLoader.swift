@@ -28,7 +28,7 @@ public final class RemoteFeedLoader {
         self.client = client
     }
     
-    public func load(completion: @escaping (Error) -> Void = { _ in}) {
+    public func load(completion: @escaping (Error) -> Void) {
         // Step 2: Move the test logic from the RemoteFeedLoader to HTTPClient
         client.get(from: url) { error in
             completion(.connectivity)

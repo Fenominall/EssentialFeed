@@ -28,7 +28,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         let url = URL(string: "https://a-given-url.com")!
         let (sut, client) = makeSUT(url: url)
         // When we invoke sut.load()
-        sut.load()
+        sut.load { _ in }
         // Then assert that a URL request was initiated in the client
         // The 'url' should match the requestedURL
         // When testing objects collaborating, asserting the values passed is not enough. We also need to ask "how many times was the method invoked?"
@@ -39,8 +39,8 @@ class RemoteFeedLoaderTests: XCTestCase {
         let url = URL(string: "https://a-given-url.com")!
         let (sut, client) = makeSUT(url: url)
         
-        sut.load()
-        sut.load()
+        sut.load { _ in }
+        sut.load { _ in }
         
         XCTAssertEqual(client.requestedURLs, [url, url])
     }
