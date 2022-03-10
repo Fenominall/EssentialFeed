@@ -12,6 +12,7 @@ import EssentialFeed
 
 class RemoteFeedLoaderTests: XCTestCase {
     
+    // MARK: - Testing the
     // Naming test_"the method which is tested"_"the name of expected behavior"
     func test_init_doesNotRequestDataFromURL() {
         // Step 4: Swap the HTTPCLient shared instance with the spy subclass during tests.
@@ -20,6 +21,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         XCTAssertTrue(client.requestedURLs.isEmpty)
     }
     
+    // MARK: - Checking if the value was captured once
     // Three types of injection can be done
     // Constructor injection
     // Property injection
@@ -35,16 +37,17 @@ class RemoteFeedLoaderTests: XCTestCase {
         XCTAssertEqual(client.requestedURLs, [url])
     }
     
+    // MARK: - Checking how many times the values were chaptured
     func test_loadTwice_requestDataFromURLTwice() {
         let url = URL(string: "https://a-given-url.com")!
         let (sut, client) = makeSUT(url: url)
         
         sut.load { _ in }
         sut.load { _ in }
-        
         XCTAssertEqual(client.requestedURLs, [url, url])
     }
     
+    // MARK: - Checking if the client delivers connectivity error when it fails
     func test_load_deliversErrorOnClientError() {
         let (sut, client) = makeSUT()
         // Check that it have only one error in an array.
@@ -54,24 +57,25 @@ class RemoteFeedLoaderTests: XCTestCase {
         let clientError = NSError(domain: "Test", code: 0)
         client.complete(with: clientError)
 
-        // Comparing that capturedErrors is just on error
+        // Comparing that capturedErrors is just on error of connectivity error
         XCTAssertEqual(capturedErrors, [.connectivity])
     }
     
+    // MARK: - Checking the Errors on the status code
     func test_load_deliversErrorOnNon200HTTPResponse() {
         let (sut, client) = makeSUT()
   
         // Checking the response error types
-        [199, 201, 300, 400, 500].forEach { code in
+        let samples = [199, 201, 300, 400, 403, 404, 500].enumerated()
+        samples.forEach { index, code in
             // Check that it have only one error in an array.
             var capturedErrors = [RemoteFeedLoader.Error]()
             sut.load { capturedErrors.append($0) }
             
-            client.complete(withStatusCode: code)
+            client.complete(withStatusCode: code, at: index)
             // Comparing that capturedErrors is just on error
             XCTAssertEqual(capturedErrors, [.invalidData])
         }
-
     }
     
     // MARK: - Helpers
@@ -102,6 +106,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         private var messages = [(url: URL, completion: (Error?, HTTPURLResponse?) -> Void)]()
         
         func get(from url: URL, completion: @escaping (Error?, HTTPURLResponse?) -> Void) {
+            // Capturing the number of calls of get method in the messages array
             messages.append((url, completion))
         }
         

@@ -14,7 +14,7 @@ public protocol HTTPClient {
 }
 
 // We don`t need to start by confirming to the <FeedLoader> protocol
-// We can take smaller (and safer) steps bt test-driving the implementation.
+// We can take smaller (and safer) steps by test-driving the implementation.
 public final class RemoteFeedLoader {
     private let url: URL
     private let client: HTTPClient
