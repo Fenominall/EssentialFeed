@@ -89,7 +89,6 @@ class RemoteFeedLoaderTests: XCTestCase {
     }
     
     // Subclass for testing
-
     private class HTTClientSpy: HTTPClient {
         // Step 3: Move the test logic to a new subclass of HTTPClient.
         // var requestedURL: URL?
@@ -103,26 +102,26 @@ class RemoteFeedLoaderTests: XCTestCase {
         // In this case, calling the method
         // '.get(from url:, completion:)'
         //        "is the message"
-        private var messages = [(url: URL, completion: (Error?, HTTPURLResponse?) -> Void)]()
+        private var messages = [(url: URL, completion: (HTTPClientResult))]()
         
-        func get(from url: URL, completion: @escaping (Error?, HTTPURLResponse?) -> Void) {
+        func get(from url: URL, completion: @escaping (HTTPClientResult)) {
             // Capturing the number of calls of get method in the messages array
             messages.append((url, completion))
         }
         
         func complete(with error: Error, at index: Int = 0) {
-            messages[index].completion(error, nil)
+            messages[index].completion(.failure(error))
         }
         // Response for the status code error
         func complete(withStatusCode code: Int, at index: Int = 0) {
-            let response = HTTPURLResponse(
+            guard let response = HTTPURLResponse(
                 // grabbing the url from the mapped requestedURLs
                 url: requestedURLs[index],
                 // invoking the passed status code
                 statusCode: code,
                 httpVersion: nil,
-                headerFields: nil)
-            messages[index].completion(nil, response)
+                headerFields: nil) else { return }
+            messages[index].completion(.success(response))
         }
     }
 

@@ -7,10 +7,11 @@
 
 import Foundation
 
+public typealias HTTPClientResult = ((Result<HTTPURLResponse, Error>) -> Void)
 
 // Protocol for a better control
 public protocol HTTPClient {
-    func get(from url: URL, completion: @escaping (Error?, HTTPURLResponse?) -> Void)
+    func get(from url: URL, completion: @escaping (HTTPClientResult))
 }
 
 // We don`t need to start by confirming to the <FeedLoader> protocol
@@ -31,10 +32,11 @@ public final class RemoteFeedLoader {
     
     public func load(completion: @escaping (Error) -> Void) {
         // Step 2: Move the test logic from the RemoteFeedLoader to HTTPClient
-        client.get(from: url) { error, response in
-            if response != nil {
+        client.get(from: url) { result in
+            switch result {
+            case .success(_):
                 completion(.invalidData)
-            } else {
+            case .failure(_):
                 completion(.connectivity)
             }
         }
