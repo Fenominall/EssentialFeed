@@ -66,7 +66,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         let (sut, client) = makeSUT()
   
         // Checking the response error types
-        let samples = [199, 201, 300, 400, 403, 404, 500].enumerated()
+        let samples = [199, 201, 300, 400, 500].enumerated()
         samples.forEach { index, code in
             // Check that it have only one error in an array.
             var capturedErrors = [RemoteFeedLoader.Error]()
@@ -76,6 +76,18 @@ class RemoteFeedLoaderTests: XCTestCase {
             // Comparing that capturedErrors is just on error
             XCTAssertEqual(capturedErrors, [.invalidData])
         }
+    }
+    
+    func test_load_deliversErrorOn200HTTPResponseWithInvalidJSON() {
+        let (sut, client) = makeSUT()
+        
+        var capturedErrors = [RemoteFeedLoader.Error]()
+        sut.load { capturedErrors.append($0) }
+        let invalidJSON = Data(bytes: "invalid json".utf8)
+        
+        client.complete(withStatusCode: 200, data: invalidJSON)
+        // Comparing that capturedErrors is just on error
+        XCTAssertEqual(capturedErrors, [.invalidData])
     }
     
     // MARK: - Helpers
@@ -113,7 +125,9 @@ class RemoteFeedLoaderTests: XCTestCase {
             messages[index].completion(.failure(error))
         }
         // Response for the status code error
-        func complete(withStatusCode code: Int, at index: Int = 0) {
+        func complete(withStatusCode code: Int,
+                      data: Data = Data(),
+                      at index: Int = 0) {
             guard let response = HTTPURLResponse(
                 // grabbing the url from the mapped requestedURLs
                 url: requestedURLs[index],
@@ -121,7 +135,7 @@ class RemoteFeedLoaderTests: XCTestCase {
                 statusCode: code,
                 httpVersion: nil,
                 headerFields: nil) else { return }
-            messages[index].completion(.success(response))
+            messages[index].completion(.success((data, response)))
         }
     }
 
