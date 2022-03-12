@@ -31,6 +31,7 @@ public final class RemoteFeedLoader {
         self.url = urL
         self.client = client
     }
+
     
     public func load(completion: @escaping (Results) -> Void) {
         // Step 2: Move the test logic from the RemoteFeedLoader to HTTPClient
@@ -76,9 +77,11 @@ private class FeedItemsMapper {
         }
     }
     
+    static var OK_200: Int { return 200 }
+    
     // MARK: - Helpers
     static func map(_ data: Data, _ response: HTTPURLResponse) throws -> [FeedItem] {
-        guard response.statusCode == 200 else {
+        guard response.statusCode == OK_200 else {
             throw RemoteFeedLoader.Error.invalidData
         }
         let root = try JSONDecoder().decode(Root.self,
