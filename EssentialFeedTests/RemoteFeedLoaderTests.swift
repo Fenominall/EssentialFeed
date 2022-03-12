@@ -67,7 +67,9 @@ class RemoteFeedLoaderTests: XCTestCase {
         let samples = [199, 201, 300, 400, 500].enumerated()
         samples.forEach { index, code in
             expect(sut, toCompleteWith: .failure(.invalidData)) {
-                client.complete(withStatusCode: code, at: index)
+                // the json is valid but there is nothing to map
+                let json = makeItemsJSON([])
+                client.complete(withStatusCode: code, data: json, at: index)
             }
         }
     }
@@ -190,7 +192,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         }
         // Response for the status code error
         func complete(withStatusCode code: Int,
-                      data: Data = Data(),
+                      data: Data,
                       at index: Int = 0) {
             guard let response = HTTPURLResponse(
                 // grabbing the url from the mapped requestedURLs
