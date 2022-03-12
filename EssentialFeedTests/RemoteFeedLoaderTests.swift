@@ -90,6 +90,43 @@ class RemoteFeedLoaderTests: XCTestCase {
         }
     }
     
+    // MARK: - Success Check for delivering Feeditems with JSON
+    func test_load_deliversItemsOn200HTTPResponseWithJSONIItems() {
+        let (sut, client) = makeSUT()
+        // By default struct initializer is internal and we do not have access to that module
+        let item1 = FeedItem(
+            id: UUID(),
+            description: nil,
+            location: nil,
+            imageURL: URL(string: "https://a-url.com")!)
+        let item1JSON = [
+            "id": item1.id.uuidString,
+            "image": item1.imageURL.absoluteString
+        ]
+        
+        let item2 = FeedItem(
+            id: UUID(),
+            description: "a test",
+            location: "a location",
+            imageURL: URL(string: "https://a-another.com")!)
+        
+        let item2JSON = [
+            "id": item2.id.uuidString,
+            "description": item2.description,
+            "location": item2.location,
+            "image": item2.imageURL.absoluteString,
+        ]
+        
+        let itemsJSON = [
+            "items": [item1JSON, item2JSON]
+        ]
+        
+        expect(sut, toCompleteWith: .success([item1, item2])) {
+            let jsonData = try! JSONSerialization.data(withJSONObject: itemsJSON)
+            client.complete(withStatusCode: 200, data: jsonData)
+        }
+    }
+    
     // MARK: - Helpers
     // factory function to make a generic SUT
     private func makeSUT(
