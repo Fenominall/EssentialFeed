@@ -62,7 +62,7 @@ class RemoteFeedLoaderTests: XCTestCase {
     // Comparing that capturedErrors is just on error
     func test_load_deliversErrorOnNon200HTTPResponse() {
         let (sut, client) = makeSUT()
-  
+        
         // Checking the response error types
         let samples = [199, 201, 300, 400, 500].enumerated()
         samples.forEach { index, code in
@@ -105,7 +105,7 @@ class RemoteFeedLoaderTests: XCTestCase {
             description: "a test",
             location: "a location",
             imageURL: URL(string: "https://a-another.com")!)
-                
+        
         let items = [item1.model, item2.model]
         
         expect(sut, toCompleteWith: .success(items)) {
@@ -114,15 +114,36 @@ class RemoteFeedLoaderTests: XCTestCase {
         }
     }
     
+    
+    
     // MARK: - Helpers
     // factory function to make a generic SUT
     private func makeSUT(
-        url: URL = URL(string: "https://a-url.com")!) -> (sut:
-                                                            RemoteFeedLoader, client: HTTClientSpy) {
-        let client = HTTClientSpy()
-        let sut = RemoteFeedLoader(urL: url, client: client)
-        return (sut, client)
-    }
+        url: URL = URL(string: "https://a-url.com")!,
+        file: StaticString = #filePath,
+        line: UInt = #line) -> (sut:RemoteFeedLoader, client: HTTClientSpy) {
+            
+            let client = HTTClientSpy()
+            let sut = RemoteFeedLoader(urL: url, client: client)
+            trackForMemoryLeaks(sut, file: file, line: line)
+            trackForMemoryLeaks(client, file: file, line: line)
+            return (sut, client)
+        }
+    
+    // MARK: - Test for checking memory leaks
+    private func trackForMemoryLeaks(
+        _ instance: AnyObject,
+        file: StaticString = #filePath,
+        line: UInt = #line) {
+            // When every test finishes running addTeardownBlock is called
+            addTeardownBlock { [weak instance] in
+                XCTAssertNil(
+                    instance,
+                    "Instance should have been deallocated. Potential memory leak.",
+                    file: file,
+                    line: line)
+            }
+        }
     
     private func makeItem(id: UUID,
                           description: String? = nil,
@@ -135,9 +156,10 @@ class RemoteFeedLoaderTests: XCTestCase {
         let json = [
             "id": id.uuidString,
             "description": description,
+            
             "location": location,
             "image": imageURL.absoluteString
-        // to match the types of objects we need to use 'reduce'
+            // to match the types of objects we need to use 'reduce'
         ].reduce(into: [String: Any]())  { (acc, element) in
             if let value = element.value { acc[element.key] = value }
         }
@@ -159,7 +181,7 @@ class RemoteFeedLoaderTests: XCTestCase {
             sut.load { capturedResults.append($0) }
             
             action()
-        
+            
             XCTAssertEqual(
                 capturedResults, [result],
                 file: file,
@@ -204,5 +226,5 @@ class RemoteFeedLoaderTests: XCTestCase {
             messages[index].completion(.success((data, response)))
         }
     }
-
+    
 }
