@@ -7,13 +7,6 @@
 
 import Foundation
 
-public typealias HTTPClientResult = ((Result<(Data, HTTPURLResponse), Error>) -> Void)
-
-// Protocol for a better control
-public protocol HTTPClient {
-    func get(from url: URL, completion: @escaping (HTTPClientResult))
-}
-
 // We don`t need to start by confirming to the <FeedLoader> protocol
 // We can take smaller (and safer) steps by test-driving the implementation.
 public final class RemoteFeedLoader {
@@ -50,48 +43,6 @@ public final class RemoteFeedLoader {
         }
     }
 }
-
-
-private class FeedItemsMapper {
-    // MARK: - Properties
-    // Because an array inside of item kpath
-    // Creating a container for Feeditems received as json objects to decode them later
-    private struct Root: Decodable {
-        let items: [Item]
-    }
-
-    // Constructor that receives items and maps them into FeedItem
-    // The API representation context to hide the knowledge of API from FeedITem
-    private struct Item: Decodable {
-        let id: UUID
-        let description: String?
-        let location: String?
-        let image: URL
-        
-        var item: FeedItem {
-            return FeedItem(
-                id: id,
-                description: description,
-                location: location,
-                imageURL: image)
-        }
-    }
-    
-    static var OK_200: Int { return 200 }
-    
-    // MARK: - Helpers
-    static func map(_ data: Data, _ response: HTTPURLResponse) throws -> [FeedItem] {
-        guard response.statusCode == OK_200 else {
-            throw RemoteFeedLoader.Error.invalidData
-        }
-        let root = try JSONDecoder().decode(Root.self,
-                                            from: data)
-        return root.items.map({ $0.item })
-    }
-}
-
-
-
 
 //class HTTPClient {
 //    // Step 1: Make the shared instance a variable, so the class can be subleased
