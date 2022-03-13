@@ -22,7 +22,7 @@ class RemoteFeedLoaderTests: XCTestCase {
     }
     
     // MARK: - Checking if the value was captured once
-     // Three types of injection can be done
+    // Three types of injection can be done
     // Constructor injection
     // Property injection
     // Method injection
@@ -185,19 +185,30 @@ class RemoteFeedLoaderTests: XCTestCase {
     
     private func expect(
         _ sut: RemoteFeedLoader,
-        toCompleteWith result: RemoteFeedLoader.Results,
+        toCompleteWith expectedResult: RemoteFeedLoader.Results,
         when action: () -> Void,
         file: StaticString = #filePath,
         line: UInt = #line) {
-            var capturedResults = [RemoteFeedLoader.Results]()
-            sut.load { capturedResults.append($0) }
+            
+            let expectation = expectation(description: "Wait for load completion")
+            
+            sut.load { receivedResult in
+                switch (receivedResult, expectedResult) {
+                    
+                case let (.success(receivedItems), .success(expectedItems)):
+                    XCTAssertEqual(
+                        receivedItems, expectedItems, file: file, line: line)
+                case let (.failure(receivedError), .failure(expectedError)):
+                    XCTAssertEqual(
+                        receivedError, expectedError, file: file, line: line)
+                default:
+                    XCTFail("Expected result \(expectedResult) got \(receivedResult) instead", file: file, line: line)
+                }
+                expectation.fulfill()
+            }
             
             action()
-            
-            XCTAssertEqual(
-                capturedResults, [result],
-                file: file,
-                line: line)
+            wait(for: [expectation], timeout: 1.0)
         }
     
     // Subclass for testing
