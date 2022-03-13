@@ -22,7 +22,7 @@ class RemoteFeedLoaderTests: XCTestCase {
     }
     
     // MARK: - Checking if the value was captured once
-    // Three types of injection can be done
+     // Three types of injection can be done
     // Constructor injection
     // Property injection
     // Method injection
@@ -37,7 +37,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         XCTAssertEqual(client.requestedURLs, [url])
     }
     
-    // MARK: - Checking how many times the values were chaptured
+    // MARK: - Checking how many times the values were captured
     func test_loadTwice_requestDataFromURLTwice() {
         let url = URL(string: "https://a-given-url.com")!
         let (sut, client) = makeSUT(url: url)
