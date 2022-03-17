@@ -31,24 +31,29 @@ class URLSessionHTTPClient {
 class URLSessionHTTPClientTests: XCTestCase {
     
     func test_getFromURL_failsOnRequestError() {
-        let url = URL(string: "https://url-a.com")!
-        let error = NSError(domain: "any error", code: 1)
-
-        URLProtocolStub.stub(url: url, error: error)
+        // registering URLProtocol to start it
+        URLProtocolStub.startInterceptingRequests()
         
-        let exp = expectation(description: "Wait for completion")
+        let url = URL(string: "http://any-url.com")!
+        let error = NSError(domain: "any error", code: 0)
+        URLProtocolStub.stub(url: url, error: error)
+
         let sut = URLSessionHTTPClient()
+        let exp = expectation(description: "Wait for completion")
         
         sut.get(from: url) { result in
             switch result {
             case let .failure(receivedError as NSError):
+                print(receivedError.localizedDescription)
                 XCTAssertEqual(receivedError, error)
             default:
-                XCTFail("Expected failure with error \(error), got \(result) insted")
+                XCTFail("Expected failure with error \(error), got \(result) instead")
             }
             exp.fulfill()
         }
         wait(for: [exp], timeout: 1.0)
+        // Stop stubing
+        URLProtocolStub.stopInterceptingRequests()
     }
     
     
@@ -62,12 +67,21 @@ class URLSessionHTTPClientTests: XCTestCase {
             let error: Error?
         }
         
-        static func stub(url: URL, error: Error? = nil) {
+        static func stub(url: URL, error: Error?) {
             stubs[url] = Stub(error: error)
         }
         
+        static func startInterceptingRequests() {
+            URLProtocol.registerClass(URLProtocolStub.self)
+        }
+        
+        static func stopInterceptingRequests() {
+            URLProtocol.unregisterClass(URLProtocolStub.self)
+            stubs = [:]
+        }
+        
         override class func canInit(with request: URLRequest) -> Bool {
-            guard let url = request.url else { return false}
+            guard let url = request.url else { return false }
             // Checking if we have a stub for the url if it`s false return nil, if we have the stub return true
             return URLProtocolStub.stubs[url] != nil
         }
