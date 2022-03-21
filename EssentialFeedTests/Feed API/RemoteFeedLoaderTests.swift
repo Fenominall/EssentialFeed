@@ -172,6 +172,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         return try! JSONSerialization.data(withJSONObject: itemsJSON)
     }
     
+    
     private func expect(
         _ sut: RemoteFeedLoader,
         toCompleteWith expectedResult: RemoteFeedLoader.Results,
@@ -203,7 +204,6 @@ class RemoteFeedLoaderTests: XCTestCase {
     // Subclass for testing
     private class HTTClientSpy: HTTPClient {
         // Step 3: Move the test logic to a new subclass of HTTPClient.
-        // var requestedURL: URL?
         // Checking if the same URL is loaded twice
         var requestedURLs: [URL] {
             return messages.map { $0.url }
