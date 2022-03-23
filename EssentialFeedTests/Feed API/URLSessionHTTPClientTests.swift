@@ -11,7 +11,7 @@ import EssentialFeed
 
 // MARK: - Will Go to dev
 
-class URLSessionHTTPClient {
+class URLSessionHTTPClient: HTTPClient {
     private let session: URLSession
     
     init(session: URLSession = .shared) {
@@ -68,7 +68,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         let receivedError = resultErrorFor(data: nil, response: nil, error: requestError)
         
         print(receivedError as NSError? ?? "error", receivedError ?? "error")
-        //        XCTAssertEqual(receivedError as NSError?, requestError)
+        // XCTAssertEqual(receivedError as NSError?, requestError)
     }
     
     func test_getFromURL_failsOnAllInvalidRepresentationCases() {
@@ -112,7 +112,7 @@ class URLSessionHTTPClientTests: XCTestCase {
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath,
-                         line: UInt = #line) -> URLSessionHTTPClient {
+                         line: UInt = #line) -> HTTPClient {
         let sut =  URLSessionHTTPClient()
         
         // Test for checking memory leaks
