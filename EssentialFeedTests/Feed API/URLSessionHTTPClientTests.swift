@@ -32,7 +32,7 @@ class URLSessionHTTPClientTests: XCTestCase {
             XCTAssertEqual(request.httpMethod, "GET")
         }
         exp.fulfill()
-
+        
         makeSUT().get(from: url) { _ in }
         wait(for: [exp], timeout: 1.0)
     }
@@ -43,7 +43,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         let receivedError = resultErrorFor(data: nil, response: nil, error: requestError)
         
         print(receivedError as NSError? ?? "error", receivedError ?? "error")
-        // XCTAssertEqual(receivedError as NSError?, requestError)
+//        XCTAssertEqual(receivedError as NSError?, requestError)
     }
     
     func test_getFromURL_failsOnAllInvalidRepresentationCases() {
@@ -71,7 +71,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         XCTAssertEqual(receivedValues?.response.statusCode, response.statusCode)
     }
     
-
+    
     func test_getFromURL_succeedsWithEmptyDataOnHTTPURLResponseWithNilData() {
         let response = anyHTTPURLResponse()
         
@@ -102,7 +102,7 @@ class URLSessionHTTPClientTests: XCTestCase {
                                 file: StaticString = #filePath,
                                 line: UInt = #line) -> Error? {
         let result = resultFor(data: data, response: response, error: error, file: file, line: line)
-
+        
         switch result {
         case let .failure(error):
             return error
@@ -127,7 +127,7 @@ class URLSessionHTTPClientTests: XCTestCase {
             return nil
         }
     }
-
+    
     
     private func resultFor(data: Data?,
                            response: URLResponse?,
@@ -142,7 +142,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         sut.get(from: anyURL()) { result in
             receivedValues = result
             exp.fulfill()
-
+            
         }
         wait(for: [exp], timeout: 1.0)
         return receivedValues
