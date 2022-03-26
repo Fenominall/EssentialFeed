@@ -7,7 +7,7 @@
 
 import Foundation
 
-public typealias HTTPClientResult = ((Result<(Data, HTTPURLResponse), Error>))
+public typealias HTTPClientResult = Result<(Data, HTTPURLResponse), Error>
 
 // Protocol for a better control
 public protocol HTTPClient {
