@@ -78,11 +78,34 @@ class FeedStore {
     func completeInsertion(with error: Error, at index: Int = 0) {
         insertionCompletions[index](error)
     }
+    
+    func completeInsertionSuccessfully (at index: Int = 0) {
+        insertionCompletions[index](nil)
+    }
 }
 
 // MARK: - CacheFeedUseCaseTests
 class CacheFeedUseCaseTests: XCTestCase {
+    // MARK: - Use cases for testing cahging
     
+    // ### Data: - Feed items
+    
+    // ### Primary course (happy path):
+    // 1. Execute "Save Feed Items" command with above data.
+    // 2. System deletes old cache data.
+    // 3. System encodes feed items.
+    // 4. System timestaps the new cache.
+    // 5. System saves new cache data.
+    // 6. System delivers success message.
+    
+    // ### Deleting error course (sad path):
+    // 1. System deliver error.
+    
+    // ### Saving error course (sad path):
+    // 1. System delivers error.
+    
+    
+    // ######################################
     // # Does Not Message Store UpOn Creation
     func test_init_doesNotMessageStoreUpOnCreation() {
         let (_, store) = makeSUT()
@@ -157,6 +180,24 @@ class CacheFeedUseCaseTests: XCTestCase {
         store.completeInsertion(with: insertionError)
         wait(for: [exp], timeout: 1.0)
         XCTAssertEqual(receivedError as NSError?, insertionError)
+    }
+    
+    // # Succeeds On Successful Cache Insertion
+    func test_save_succeedsOnSuccessfulCacheInsertion() {
+        let items = [uniqueItem(), uniqueItem()]
+        let (sut, store) = makeSUT()
+        let exp = expectation(description: "Wait for save completion")
+        var receivedError: Error?
+        
+        sut.save(items) { error in
+            receivedError = error
+            exp.fulfill()
+        }
+        store.completeDeletionSuccessfully()
+        store.completeInsertionSuccessfully()
+        wait(for: [exp], timeout: 1.0)
+        // received Error should be nil
+        XCTAssertNil(receivedError)
     }
 
 
