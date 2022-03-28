@@ -10,7 +10,7 @@ import XCTest
 // @testable Benefit: we`are free to change the implementation and private implementation details without breaking the tests
 import EssentialFeed
 
-class RemoteFeedLoaderTests: XCTestCase {
+class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     
     // MARK: - Testing the initialization of RemoteFeedLoader and HTTPClient
     // Naming test_"the method which is tested"_"the name of expected behavior"
