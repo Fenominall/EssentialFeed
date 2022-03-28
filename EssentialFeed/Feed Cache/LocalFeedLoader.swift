@@ -13,6 +13,8 @@ public final class LocalFeedLoader {
     private let store: FeedStore
     private let currentDate: () -> Date
     
+    public typealias SaveResult = Error?
+    
     // MARK: - Lifecycle
     public init(store: FeedStore,
          // using an option error to notify when it has a value
@@ -24,7 +26,7 @@ public final class LocalFeedLoader {
     
     // MARK: - Helpers
     public func save(_ items: [FeedItem],
-              completion: @escaping (Error?) -> Void) {
+              completion: @escaping (SaveResult) -> Void) {
         store.deleteCachedFeed { [weak self] error in
             guard let self = self else { return }
             
@@ -36,7 +38,7 @@ public final class LocalFeedLoader {
         }
     }
     
-    private func cache(_ items: [FeedItem], with completion: @escaping (Error?) -> Void) {
+    private func cache(_ items: [FeedItem], with completion: @escaping (SaveResult) -> Void) {
         store.insert(items, timestamp: currentDate()) { [weak self] error in
             guard self != nil else { return }
             

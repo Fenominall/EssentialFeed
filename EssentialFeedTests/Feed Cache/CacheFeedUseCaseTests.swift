@@ -10,7 +10,7 @@ import EssentialFeed
 
 // MARK: - CacheFeedUseCaseTests
 class CacheFeedUseCaseTests: XCTestCase {
-    // MARK: - Use cases for testing cahging
+    // MARK: - Use cases for testing caching
     
     // ### Data: - Feed items
     
@@ -107,7 +107,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         let store = FeedStoreSpy()
         var sut: LocalFeedLoader? = LocalFeedLoader(store: store, currentDate: Date.init)
         
-        var receivedResults = [Error?]()
+        var receivedResults = [LocalFeedLoader.SaveResult]()
         sut?.save([uniqueItem()], completion: { receivedResults.append($0) })
         
         sut = nil
@@ -121,7 +121,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         let store = FeedStoreSpy()
         var sut: LocalFeedLoader? = LocalFeedLoader(store: store, currentDate: Date.init)
         
-        var receivedResults = [Error?]()
+        var receivedResults = [LocalFeedLoader.SaveResult]()
         sut?.save([uniqueItem()], completion: { receivedResults.append($0) })
         
         store.completeDeletionSuccessfully()
