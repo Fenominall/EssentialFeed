@@ -17,16 +17,16 @@ public final class LocalFeedLoader {
     
     // MARK: - Lifecycle
     public init(store: FeedStore,
-         // using an option error to notify when it has a value
-         // using success when there is no value
-         currentDate: @escaping () -> Date) {
+                // using an option error to notify when it has a value
+                // using success when there is no value
+                currentDate: @escaping () -> Date) {
         self.store = store
         self.currentDate = currentDate
     }
     
     // MARK: - Helpers
     public func save(_ items: [FeedItem],
-              completion: @escaping (SaveResult) -> Void) {
+                     completion: @escaping (SaveResult) -> Void) {
         store.deleteCachedFeed { [weak self] error in
             guard let self = self else { return }
             
@@ -38,11 +38,22 @@ public final class LocalFeedLoader {
         }
     }
     
-    private func cache(_ items: [FeedItem], with completion: @escaping (SaveResult) -> Void) {
-        store.insert(items, timestamp: currentDate()) { [weak self] error in
+    private func cache(_ items: [FeedItem],
+                       with completion: @escaping (SaveResult) -> Void) {
+        store.insert(items.toLocal(), timestamp: currentDate()) { [weak self] error in
             guard self != nil else { return }
             
             completion(error)
+        }
+    }
+}
+
+private extension Array where Element == FeedItem {
+    func toLocal() -> [LocalFeedItem] {
+        return map { LocalFeedItem(id: $0.id,
+                                   description: $0.description,
+                                   location: $0.location,
+                                   imageURL: $0.imageURL)
         }
     }
 }
