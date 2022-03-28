@@ -217,7 +217,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         private var messages = [(url: URL, completion: (HTTPClientResult) -> Void)]()
         
         func get(from url: URL, completion: @escaping (HTTPClientResult) -> Void) {
-            // Capturing the number of calls of get method in the messages array
+            // Capturing the number of calls of get m ethod in the messages array
             messages.append((url, completion))
         }
         
