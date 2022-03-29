@@ -168,10 +168,10 @@
 		4FF855FB27D79B380072B0A9 /* EssentialFeed */ = {
 			isa = PBXGroup;
 			children = (
-				4F7E543A27F206700074630F /* Feed Cache */,
-				4F2BB41527DDF48A0088128D /* Feed API */,
-				4FF8561627D79C5C0072B0A9 /* FeedFeature */,
 				4FF855FC27D79B380072B0A9 /* EssentialFeed.h */,
+				4F2BB41527DDF48A0088128D /* Feed API */,
+				4F7E543A27F206700074630F /* Feed Cache */,
+				4FF8561627D79C5C0072B0A9 /* FeedFeature */,
 				4FF8561127D79B750072B0A9 /* info.plist */,
 			);
 			path = EssentialFeed;

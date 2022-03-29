@@ -19,6 +19,8 @@ public protocol FeedStore {
                 completion: @escaping InsertionCompletion)
 }
 
+// Mirror of the FeedItem Model but for a local representation
+// "Data transfer representation of the model"
 public struct LocalFeedItem: Equatable {
     
     public let id: UUID
