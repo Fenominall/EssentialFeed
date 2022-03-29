@@ -33,7 +33,7 @@ public final class LocalFeedLoader {
             
             if let cacheDeletionError = error {
                 completion(cacheDeletionError)
-            } else {
+            } else { 
                 self.cache(feed, with: completion)
             }
         }
@@ -43,6 +43,8 @@ public final class LocalFeedLoader {
         store.retrieve { error in
             if let error = error {
                 completion(.failure(error))
+            } else {
+                completion(.success([]))
             }
         }
     }
