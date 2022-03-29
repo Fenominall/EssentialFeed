@@ -10,7 +10,7 @@ import Foundation
 internal final class FeedItemsMapper {
     // MARK: - Properties
     // Because an array inside of item path
-    // Creating a container for Feeditems received as json objects to decode them later
+    // Creating a container for "Feeditems" received as json objects to decode them later
     private struct Root: Decodable {
         let items: [RemoteFeedItem]
     }
