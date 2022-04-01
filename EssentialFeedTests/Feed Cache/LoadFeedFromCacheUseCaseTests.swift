@@ -66,7 +66,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let lessThanSevenDaysOldTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: 1)
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
-        expect(sut, toCompleteWith: .success(feed.models)) {
+        expect(sut, toCompleteWith: .success([])) {
             store.completeRetrieval(with: feed.local,
                                     timestamp: lessThanSevenDaysOldTimestamp)
              
@@ -134,11 +134,11 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     }
     
     private func uniqueImage() -> FeedImage {
-        return FeedImage(id: UUID(), description: "any", location: "any-location", url: anyURL())
+        return FeedImage(id: UUID(), description: "any", location: "any", url: anyURL())
     }
     
     private func uniqueImageFeed() -> (models: [FeedImage], local: [LocalFeedImage]) {
-        let models = [uniqueImage(), uniqueImage()]
+        let models = [uniqueImage(), uniqueImage(), uniqueImage()]
         let local = models.map { LocalFeedImage(id: $0.id,
                                                 description: $0.description,
                                                 location: $0.location,
