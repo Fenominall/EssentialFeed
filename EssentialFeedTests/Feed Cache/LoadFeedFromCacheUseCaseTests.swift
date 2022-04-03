@@ -33,7 +33,7 @@
 // 7. Delivers No Images On More Than Seven Days Old Cache
 // 8. Has No Side Effects Cache On Retrieval Error
 // 9. Has No Side Effects On Empty Cache
-// 10. Does Not Delete Cache On Less Than Seven Days Old Cache
+// 10. Has No Effects On Less Than Seven Days Old Cache
 // 11. Deletes Cache On Seven Days Old Cache
 // 12. Deletes Cache On More Than Seven Days Old Cache
 // 13. Does Not Deliver Result After SUT Instance Has Been Deallocated
@@ -136,7 +136,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     }
     
     // # - 10
-    func test_load_doesNotDeleteCacheOnLessThanSevenDaysOldCache() {
+    func test_load_hasNoEffectsOnLessThanSevenDaysOldCache() {
         let feed = uniqueImageFeed()
         let fixedCurrentDate = Date()
         let lessThanSevenDaysOldTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: 1)
