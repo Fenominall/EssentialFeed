@@ -32,7 +32,7 @@
 // 6. Delivers No Images On Seven Days Old Cache
 // 7. Delivers No Images On More Than Seven Days Old Cache
 // 8. Has No Side Effects Cache On Retrieval Error
-// 9. Does Not Delete Cache On Empty Cache
+// 9. Has No Side Effects On Empty Cache
 // 10. Does Not Delete Cache On Less Than Seven Days Old Cache
 // 11. Deletes Cache On Seven Days Old Cache
 // 12. Deletes Cache On More Than Seven Days Old Cache
@@ -118,7 +118,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     }
     
     // # - 8
-    func test_load_hasNoSideEffectsCacheOnRetrievalError() {
+    func test_load_hasNoSideEffectCacheOnRetrievalError() {
         let (sut, store) = makeSUT()
         
         sut.load { _ in }
@@ -127,7 +127,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     }
     
     // # - 9
-    func test_load_doesNotDeleteCacheOnEmptyCache() {
+    func test_load_hasNotSideEffectsOnEmptyCache() {
         let (sut, store) = makeSUT()
         
         sut.load { _ in }
