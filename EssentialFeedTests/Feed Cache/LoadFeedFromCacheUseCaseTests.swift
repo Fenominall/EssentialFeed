@@ -31,7 +31,7 @@
 // 5. Delivers Cached Images On Less Than Seven Days Old Cache
 // 6. Delivers No Images On Seven Days Old Cache
 // 7. Delivers No Images On More Than Seven Days Old Cache
-// 8. Delete Cache On Retrieval Error
+// 8. Has No Side Effects Cache On Retrieval Error
 // 9. Does Not Delete Cache On Empty Cache
 // 10. Does Not Delete Cache On Less Than Seven Days Old Cache
 // 11. Deletes Cache On Seven Days Old Cache
@@ -118,12 +118,12 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     }
     
     // # - 8
-    func test_load_deleteCacheOnRetrievalError() {
+    func test_load_hasNoSideEffectsCacheOnRetrievalError() {
         let (sut, store) = makeSUT()
         
         sut.load { _ in }
         store.completeRetrieval(with: anyNSError())
-        XCTAssertEqual(store.receivedMessages, [.retrieve, .deleteCachedFeed])
+        XCTAssertEqual(store.receivedMessages, [.retrieve])
     }
     
     // # - 9
