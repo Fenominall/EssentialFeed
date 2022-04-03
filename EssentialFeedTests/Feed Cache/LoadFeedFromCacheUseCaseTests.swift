@@ -36,6 +36,8 @@
 // 10. Does Not Delete Cache On Less Than Seven Days Old Cache
 // 11. Deletes Cache On Seven Days Old Cache
 // 12. Deletes Cache On More Than Seven Days Old Cache
+// 13. Does Not Deliver Result After SUT Instance Has Been Deallocated
+
 
 import XCTest
 import EssentialFeed
@@ -161,12 +163,26 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     func test_load_deletesCacheOnMoreThanSevenDaysOldCache() {
         let feed = uniqueImageFeed()
         let fixedCurrentDate = Date()
-        let moreThansevenDaysOldTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: -1)
+        let moreThanSevenDaysOldTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: -1)
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
         sut.load { _ in }
-        store.completeRetrieval(with: feed.local, timestamp: moreThansevenDaysOldTimestamp)
+        store.completeRetrieval(with: feed.local, timestamp: moreThanSevenDaysOldTimestamp)
         XCTAssertEqual(store.receivedMessages, [.retrieve, .deleteCachedFeed])
+    }
+    
+    // # - 13
+    func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
+        let store = FeedStoreSpy()
+        var sut: LocalFeedLoader? = LocalFeedLoader(store: store, currentDate: Date.init)
+        
+        var receivedResults = [LocalFeedLoader.LoadResult]()
+        sut?.load { receivedResults.append($0) }
+        
+        sut = nil
+        store.completeRetrievalWithEmptyCache()
+        // if true Not results was delivered after sut has been deallocated
+        XCTAssertTrue(receivedResults.isEmpty)
     }
     
     
