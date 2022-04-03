@@ -34,6 +34,8 @@
 // 8. Delete Cache On Retrieval Error
 // 9. Does Not Delete Cache On Empty Cache
 // 10. Does Not Delete Cache On Less Than Seven Days Old Cache
+// 11. Deletes Cache On Seven Days Old Cache
+
 
 import XCTest
 import EssentialFeed
@@ -141,6 +143,18 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         sut.load { _ in }
         store.completeRetrieval(with: feed.local, timestamp: lessThanSevenDaysOldTimestamp)
         XCTAssertEqual(store.receivedMessages, [.retrieve])
+    }
+    
+    // # - 11
+    func test_load_deletesCacheOnSevenDaysOldCache() {
+        let feed = uniqueImageFeed()
+        let fixedCurrentDate = Date()
+        let sevenDaysOldTimestamp = fixedCurrentDate.adding(days: -7)
+        let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
+        
+        sut.load { _ in }
+        store.completeRetrieval(with: feed.local, timestamp: sevenDaysOldTimestamp)
+        XCTAssertEqual(store.receivedMessages, [.retrieve, .deleteCachedFeed])
     }
     
     
