@@ -15,6 +15,8 @@
 		4F43BE1F27F3628A0076FDE1 /* RemoteFeedItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F43BE1E27F3628A0076FDE1 /* RemoteFeedItem.swift */; };
 		4F43BE2127F368430076FDE1 /* LocalFeedImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F43BE2027F368430076FDE1 /* LocalFeedImage.swift */; };
 		4F48A24427FA174E00484E3B /* ValidateFeedCacheUserCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F48A24327FA174E00484E3B /* ValidateFeedCacheUserCaseTests.swift */; };
+		4F48A24627FA1C7200484E3B /* FeedCacheTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F48A24527FA1C7200484E3B /* FeedCacheTestHelpers.swift */; };
+		4F48A24827FA1DD500484E3B /* SharedTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F48A24727FA1DD500484E3B /* SharedTestHelpers.swift */; };
 		4F51553827E51BDA003B3B59 /* XCTTestCase+MemoryLeakTrackingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F51553727E51BDA003B3B59 /* XCTTestCase+MemoryLeakTrackingHelper.swift */; };
 		4F64D9F627EB666300EC8656 /* URLSessionHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F64D9F527EB666300EC8656 /* URLSessionHTTPClient.swift */; };
 		4F7E543C27F2067F0074630F /* LocalFeedLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F7E543B27F2067F0074630F /* LocalFeedLoader.swift */; };
@@ -57,6 +59,8 @@
 		4F43BE1E27F3628A0076FDE1 /* RemoteFeedItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFeedItem.swift; sourceTree = "<group>"; };
 		4F43BE2027F368430076FDE1 /* LocalFeedImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFeedImage.swift; sourceTree = "<group>"; };
 		4F48A24327FA174E00484E3B /* ValidateFeedCacheUserCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidateFeedCacheUserCaseTests.swift; sourceTree = "<group>"; };
+		4F48A24527FA1C7200484E3B /* FeedCacheTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCacheTestHelpers.swift; sourceTree = "<group>"; };
+		4F48A24727FA1DD500484E3B /* SharedTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedTestHelpers.swift; sourceTree = "<group>"; };
 		4F51553727E51BDA003B3B59 /* XCTTestCase+MemoryLeakTrackingHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTTestCase+MemoryLeakTrackingHelper.swift"; sourceTree = "<group>"; };
 		4F64D9F527EB666300EC8656 /* URLSessionHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionHTTPClient.swift; sourceTree = "<group>"; };
 		4F7E543B27F2067F0074630F /* LocalFeedLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFeedLoader.swift; sourceTree = "<group>"; };
@@ -135,6 +139,7 @@
 			isa = PBXGroup;
 			children = (
 				4F51553727E51BDA003B3B59 /* XCTTestCase+MemoryLeakTrackingHelper.swift */,
+				4F48A24727FA1DD500484E3B /* SharedTestHelpers.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -215,6 +220,7 @@
 			isa = PBXGroup;
 			children = (
 				4FFB10D927F37F4A00A56FC6 /* FeedStoreSpy.swift */,
+				4F48A24527FA1C7200484E3B /* FeedCacheTestHelpers.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -385,10 +391,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F48A24627FA1C7200484E3B /* FeedCacheTestHelpers.swift in Sources */,
 				4F48A24427FA174E00484E3B /* ValidateFeedCacheUserCaseTests.swift in Sources */,
 				4FF8561C27D7AC5B0072B0A9 /* LoadFeedFromRemoteUseCaseTests.swift in Sources */,
 				4FC312D127DF2453004C33AE /* URLSessionHTTPClientTests.swift in Sources */,
 				4FFB10DA27F37F4A00A56FC6 /* FeedStoreSpy.swift in Sources */,
+				4F48A24827FA1DD500484E3B /* SharedTestHelpers.swift in Sources */,
 				4FBBAF8627F1AAF700E07F7B /* CacheFeedUseCaseTests.swift in Sources */,
 				4FFB10D727F37D5700A56FC6 /* LoadFeedFromCacheUseCaseTests.swift in Sources */,
 				4F51553827E51BDA003B3B59 /* XCTTestCase+MemoryLeakTrackingHelper.swift in Sources */,
