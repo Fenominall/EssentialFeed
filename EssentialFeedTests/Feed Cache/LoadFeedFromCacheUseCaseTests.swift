@@ -34,8 +34,8 @@
 // 8. Has No Side Effects Cache On Retrieval Error
 // 9. Has No Side Effects On Empty Cache
 // 10. Has No Effects On Less Than Seven Days Old Cache
-// 11. Deletes Cache On Seven Days Old Cache
-// 12. Deletes Cache On More Than Seven Days Old Cache
+// 11. Has No Side Effects On Seven Days Old Cache
+// 12. Has No Side Effects On More Than Seven Days Old Cache
 // 13. Does Not Deliver Result After SUT Instance Has Been Deallocated
 
 
@@ -148,7 +148,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     }
     
     // # - 11
-    func test_load_deletesCacheOnSevenDaysOldCache() {
+    func test_load_hasNoSideEffectsOnSevenDaysOldCache() {
         let feed = uniqueImageFeed()
         let fixedCurrentDate = Date()
         let sevenDaysOldTimestamp = fixedCurrentDate.adding(days: -7)
@@ -156,11 +156,11 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         
         sut.load { _ in }
         store.completeRetrieval(with: feed.local, timestamp: sevenDaysOldTimestamp)
-        XCTAssertEqual(store.receivedMessages, [.retrieve, .deleteCachedFeed])
+        XCTAssertEqual(store.receivedMessages, [.retrieve])
     }
     
     // # - 12
-    func test_load_deletesCacheOnMoreThanSevenDaysOldCache() {
+    func test_load_hasNotSideEffectsOnMoreThanSevenDaysOldCache() {
         let feed = uniqueImageFeed()
         let fixedCurrentDate = Date()
         let moreThanSevenDaysOldTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: -1)
@@ -168,7 +168,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         
         sut.load { _ in }
         store.completeRetrieval(with: feed.local, timestamp: moreThanSevenDaysOldTimestamp)
-        XCTAssertEqual(store.receivedMessages, [.retrieve, .deleteCachedFeed])
+        XCTAssertEqual(store.receivedMessages, [.retrieve])
     }
     
     // # - 13
