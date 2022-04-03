@@ -23,18 +23,31 @@
 // Empty cache course (sad path):
 // 1. System delivers no feed images.
 
+// MARK: - Testing cases
+// 1. Does Not Message Store(FeedStore) Up On Creation
+// 2. Requests Cache Retrieval
+// 3. Fails On Retrieval Error
+// 4. Delivers No Images On Empty Cache
+// 5. Delivers Cached Images On Less Than Seven Days Old Cache
+// 6. Delivers No Images On Seven Days Old Cache
+// 7. Delivers No Images On More Than Seven Days Old Cache
+// 8. Delete Cache On Retrieval Error
+// 9. Does Not Delete Cache On Empty Cache
+// 10. Does Not Delete Cache On Less Than Seven Days Old Cache
 
 import XCTest
 import EssentialFeed
 
 class LoadFeedFromCacheUseCaseTests: XCTestCase {
     
+    // # - 1
     func test_init_doesNotMessageStoreUpOnCreation() {
         let (_, store) = makeSUT()
         
         XCTAssertEqual(store.receivedMessages, [])
     }
     
+    // # - 2
     func test_load_requestsCacheRetrieval() {
         let (sut, store) = makeSUT()
         
@@ -42,6 +55,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieve])
     }
     
+    // # - 3
     func test_load_failsOnRetrievalError() {
         let (sut, store) = makeSUT()
         let retrievalError = anyNSError()
@@ -51,15 +65,16 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         }
     }
     
+    // # - 4
     func test_load_deliversNoImagesOnEmptyCache() {
         let (sut, store) = makeSUT()
         
         expect(sut, toCompleteWith: .success([])) {
             store.completeRetrievalWithEmptyCache()
-            
         }
     }
     
+    // # - 5
     func test_load_deliversCachedImagesOnLessThanSevenDaysOldCache() {
         let feed = uniqueImageFeed()
         let fixedCurrentDate = Date()
@@ -69,10 +84,10 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         expect(sut, toCompleteWith: .success([])) {
             store.completeRetrieval(with: feed.local,
                                     timestamp: lessThanSevenDaysOldTimestamp)
-             
         }
     }
     
+    // # - 6
     func test_load_deliversNoImagesOnSevenDaysOldCache() {
         let feed = uniqueImageFeed()
         let fixedCurrentDate = Date()
@@ -82,10 +97,10 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         expect(sut, toCompleteWith: .success([])) {
             store.completeRetrieval(with: feed.local,
                                     timestamp: sevenDaysOldTimestamp)
-            
         }
     }
     
+    // # - 7
     func test_load_deliversNoImagesOnMoreThanSevenDaysOldCache() {
         let feed = uniqueImageFeed()
         let fixedCurrentDate = Date()
@@ -95,11 +110,10 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         expect(sut, toCompleteWith: .success([])) {
             store.completeRetrieval(with: feed.local,
                                     timestamp: moreThanSevenDaysOldTimestamp)
-            
         }
     }
     
-    // Delete Cache On Retrieval Error
+    // # - 8
     func test_load_deleteCacheOnRetrievalError() {
         let (sut, store) = makeSUT()
         
@@ -108,11 +122,24 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieve, .deleteCachedFeed])
     }
     
+    // # - 9
     func test_load_doesNotDeleteCacheOnEmptyCache() {
         let (sut, store) = makeSUT()
         
         sut.load { _ in }
         store.completeRetrievalWithEmptyCache()
+        XCTAssertEqual(store.receivedMessages, [.retrieve])
+    }
+    
+    // # - 10
+    func test_load_doesNotDeleteCacheOnLessThanSevenDaysOldCache() {
+        let feed = uniqueImageFeed()
+        let fixedCurrentDate = Date()
+        let lessThanSevenDaysOldTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: 1)
+        let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
+        
+        sut.load { _ in }
+        store.completeRetrieval(with: feed.local, timestamp: lessThanSevenDaysOldTimestamp)
         XCTAssertEqual(store.receivedMessages, [.retrieve])
     }
     
