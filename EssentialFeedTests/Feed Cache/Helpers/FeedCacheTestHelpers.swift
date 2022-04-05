@@ -27,12 +27,15 @@ extension Date {
         return adding(days: -feedCacheMaxAgeInDays)
     }
     
+    // computed property because extension cannot have stored properties
     private var feedCacheMaxAgeInDays: Int { return 7 }
     
-    func adding(days: Int) -> Date {
+    private func adding(days: Int) -> Date {
         return Calendar(identifier: .gregorian).date(byAdding: .day, value: days, to: self)!
     }
-    
+}
+
+extension Date {
     func adding(seconds: TimeInterval) -> Date {
         return self + seconds
     }
