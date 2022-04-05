@@ -13,7 +13,7 @@ public enum RetrieveCachedFeedResult {
     case failure(Error)
 }
 
-
+// FeedStore protects a controller from depending on concrete store implementations like (CoreData or Realm or Filesystem)
 public protocol FeedStore {
     typealias DeletionCompletion = (Error?) -> Void
     typealias InsertionCompletion = (Error?) -> Void
