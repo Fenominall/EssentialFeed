@@ -27,8 +27,34 @@ import EssentialFeed
 
 class CodableFeedStore {
     private struct Cache: Codable {
-        let feed: [LocalFeedImage]
+        let feed: [CodableFeedImage]
         let timestamp: Date
+        
+        var localFeed: [LocalFeedImage] {
+            return feed.map { $0.local }
+        }
+    }
+    
+    // Mirror of LocalFeedImage
+    private struct CodableFeedImage: Codable {
+        private let id: UUID
+        private let description: String?
+        private let location: String?
+        private let url: URL
+        
+        init(_ image: LocalFeedImage) {
+            self.id = image.id
+            self.description = image.description
+            self.location = image.location
+            self.url = image.url
+        }
+        
+        var local: LocalFeedImage {
+            return LocalFeedImage(id: id,
+                                  description: description,
+                                  location: location,
+                                  url: url)
+        }
     }
     
     private let storeURL = FileManager.default.urls(for: .documentDirectory,
@@ -41,18 +67,19 @@ class CodableFeedStore {
         
         let decoder = JSONDecoder()
         let cache = try! decoder.decode(Cache.self, from: data)
-        completion(.found(feed: cache.feed, timestamp: cache.timestamp))
+        completion(.found(feed: cache.localFeed, timestamp: cache.timestamp))
     }
     
     func insert(_ feed: [LocalFeedImage],
                 timestamp: Date,
                 completion: @escaping FeedStore.InsertionCompletion) {
         let encoder = JSONEncoder()
-        let encoded = try! encoder.encode(Cache(feed: feed, timestamp: timestamp))
+        let cache = Cache(feed: feed.map(CodableFeedImage.init), timestamp: timestamp)
+        let encoded = try! encoder.encode(cache)
         try! encoded.write(to: storeURL)
         completion(nil)
     }
-
+    
 }
 
 class CodableFeedStoreTests: XCTestCase {
@@ -61,15 +88,15 @@ class CodableFeedStoreTests: XCTestCase {
     override class func setUp() {
         super.setUp()
         let storeURL = FileManager.default.urls(for: .documentDirectory,
-                                                        in: .userDomainMask).first!.appendingPathComponent("image-feed.test")
+                                                in: .userDomainMask).first!.appendingPathComponent("image-feed.test")
         try? FileManager.default.removeItem(at: storeURL)
     }
-     
+    
     // 'teatDown' is invoked *after* every test method execution
     override class func tearDown() {
         super.tearDown()
         let storeURL = FileManager.default.urls(for: .documentDirectory,
-                                                        in: .userDomainMask).first!.appendingPathComponent("image-feed.test")
+                                                in: .userDomainMask).first!.appendingPathComponent("image-feed.test")
         try? FileManager.default.removeItem(at: storeURL)
     }
     
@@ -112,10 +139,10 @@ class CodableFeedStoreTests: XCTestCase {
         let feed = uniqueImageFeed().local
         let timestamp = Date()
         let exp = expectation(description: "Wait for cache retrieval")
-
+        
         sut.insert(feed, timestamp: timestamp) { insertionError in
             XCTAssertNil(insertionError, "Expected feed to be inserted successfully")
-
+            
             sut.retrieve { retrieveResult in
                 switch retrieveResult {
                 case let .found(retrievedFeed, retrievedTimestamp):

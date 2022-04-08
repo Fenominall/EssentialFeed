@@ -10,7 +10,7 @@ import Foundation
 
 // Mirror of the FeedImage Model but for a local representation
 // "Data transfer representation of the model"
-public struct LocalFeedImage: Equatable, Codable {
+public struct LocalFeedImage: Equatable {
     
     public let id: UUID
     public let description: String?
