@@ -11,7 +11,7 @@
 ///     ✅ Empty cache returns empty
 ///     ✅ Empty cache twice returns empty (no side-effects)
 ///     ✅ Non-empty cache return data
-///     - Non-empty cache twice return same data (no side-effects)
+///     ✅ Non-empty cache twice return same data (no side-effects)
 ///     - Error return error(if applicable, e.g., invalid data)
 ///     - Error twice return same error  (if applicable, e.g., invalid data)
 
@@ -72,10 +72,13 @@ class CodableFeedStore {
         guard let data = try? Data(contentsOf: storeURL) else {
             return completion(.empty)
         }
-        
-        let decoder = JSONDecoder()
-        let cache = try! decoder.decode(Cache.self, from: data)
-        completion(.found(feed: cache.localFeed, timestamp: cache.timestamp))
+        do {
+            let decoder = JSONDecoder()
+            let cache = try decoder.decode(Cache.self, from: data)
+            completion(.found(feed: cache.localFeed, timestamp: cache.timestamp))
+        } catch {
+            completion(.failure(error))
+        }
     }
     
     func insert(_ feed: [LocalFeedImage],
@@ -103,7 +106,7 @@ class CodableFeedStoreTests: XCTestCase {
         super.tearDown()
         undoStoreSideEffects()
     }
-
+    
     func test_retrieve_deliversEmptyOnEmptyCache() {
         let sut = makeSUT()
         
@@ -134,6 +137,13 @@ class CodableFeedStoreTests: XCTestCase {
         insert((feed, timestamp), to: sut)
         
         expect(sut, toRetrieveTwice: .found(feed: feed, timestamp: timestamp))
+    }
+    
+    func test_retrieve_deliversFailureOnRetrievalError() {
+        let sut = makeSUT()
+        
+        try! "invalid data".write(to: testSpecificStoreURL(), atomically: false, encoding: .utf8)
+        expect(sut, toRetrieve: .failure(anyNSError()))
     }
     
     // MARK: - Helpers
@@ -172,7 +182,8 @@ class CodableFeedStoreTests: XCTestCase {
         let exp = expectation(description: "wait for cache retrieval")
         sut.retrieve { retrievedResult in
             switch (expectedResult, retrievedResult) {
-            case (.empty, .empty):
+            case (.empty, .empty),
+                (.failure, .failure):
                 break
             case let (.found(expected), .found(retrieved)):
                 XCTAssertEqual(retrieved.feed, expected.feed, file: file, line: line)
@@ -185,7 +196,7 @@ class CodableFeedStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-
+    
     private func setupEmptyStoreState() {
         deleteStoreArtifacts()
     }
