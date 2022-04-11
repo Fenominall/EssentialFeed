@@ -15,10 +15,10 @@
 ///     ✅ Error return error(if applicable, e.g., invalid data)
 ///     ✅ Error twice return same error  (if applicable, e.g., invalid data)
 
-/// - Insert
+/// ✅ Insert
 ///     ✅ To empty cache stores data
 ///     ✅ To non-empty cache overrides previous data with new data
-///     - Error (if applicable, e.g., no write permission)
+///     ✅ Error (if applicable, e.g., no write permission)
 
 /// - Delete
 ///     - Empty cache does nothing (cache stays empty and does not fail)
@@ -30,7 +30,7 @@ import XCTest
 import EssentialFeed
 
 
-class CodableFeedStore {
+class CodableFeedStore: FeedStore {
     private struct Cache: Codable {
         let feed: [CodableFeedImage]
         let timestamp: Date
@@ -68,7 +68,7 @@ class CodableFeedStore {
         self.storeURL = storeURL
     }
     
-    func retrieve(completion: @escaping FeedStore.RetrievalCompletion) {
+    func retrieve(completion: @escaping RetrievalCompletion) {
         guard let data = try? Data(contentsOf: storeURL) else {
             return completion(.empty)
         }
@@ -83,7 +83,7 @@ class CodableFeedStore {
     
     func insert(_ feed: [LocalFeedImage],
                 timestamp: Date,
-                completion: @escaping FeedStore.InsertionCompletion) {
+                completion: @escaping InsertionCompletion) {
         do {
             let encoder = JSONEncoder()
             let cache = Cache(feed: feed.map(CodableFeedImage.init), timestamp: timestamp)
@@ -95,6 +95,17 @@ class CodableFeedStore {
         }
     }
     
+    func deleteCachedFeed(completion: @escaping DeletionCompletion) {
+        guard FileManager.default.fileExists(atPath: storeURL.path) else {
+            return completion(nil)
+        }
+        do {
+            try FileManager.default.removeItem(at: storeURL)
+            completion(nil)
+        } catch {
+            completion(error)
+        }
+    }
 }
 
 class CodableFeedStoreTests: XCTestCase {
@@ -189,6 +200,34 @@ class CodableFeedStoreTests: XCTestCase {
         XCTAssertNotNil(insertionError, "Expected cache insertion to fail with an error")
     }
     
+    func test_delete_hasNoSideEffectsOnEmptyCache() {
+        let sut = makeSUT()
+        
+        let deletionError = deleteCache(from: sut)
+        
+        XCTAssertNil(deletionError, "Expected empty cache deletion succeed")
+        expect(sut, toRetrieve: .empty)
+    }
+    
+    func test_delete_emptiesPerviouslyInsertedCache() {
+        let sut = makeSUT()
+        insert((uniqueImageFeed().local, Date()), to: sut)
+        
+        let deletionError = deleteCache(from: sut)
+        
+        XCTAssertNil(deletionError, "Expected non-empty cache deletion to succeed")
+        expect(sut, toRetrieve: .empty)
+    }
+    
+    func test_delete_deliversErrorOnDeletionError() {
+        let noDeletePermissionURL = cachesDirectory()
+        let sut = makeSUT(storeURL: noDeletePermissionURL)
+        
+        let deletionError = deleteCache(from: sut)
+        
+        XCTAssertNotNil(deletionError, "Expected cache deletion to fail")
+    }
+    
     // MARK: - Helpers
     private func makeSUT(storeURL: URL? = nil,
                          file: StaticString = #filePath,
@@ -243,6 +282,10 @@ class CodableFeedStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
+    private func cachesDirectory() -> URL {
+        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+    }
+    
     
     private func setupEmptyStoreState() {
         deleteStoreArtifacts()
@@ -260,5 +303,17 @@ class CodableFeedStoreTests: XCTestCase {
     
     private func deleteStoreArtifacts() {
         try? FileManager.default.removeItem(at: testSpecificStoreURL())
+    }
+    
+    private func deleteCache(from sut: FeedStore) -> Error? {
+        let exp = expectation(description: "Wait for cache deletion")
+        var deletionError: Error?
+        
+        sut.deleteCachedFeed { receivedError in
+            deletionError = receivedError
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+        return deletionError
     }
 }
