@@ -12,8 +12,8 @@
 ///     ✅ Empty cache twice returns empty (no side-effects)
 ///     ✅ Non-empty cache return data
 ///     ✅ Non-empty cache twice return same data (no side-effects)
-///     - Error return error(if applicable, e.g., invalid data)
-///     - Error twice return same error  (if applicable, e.g., invalid data)
+///     ✅ Error return error(if applicable, e.g., invalid data)
+///     ✅ Error twice return same error  (if applicable, e.g., invalid data)
 
 /// - Insert
 ///     ✅ To empty cache stores data
@@ -147,6 +147,16 @@ class CodableFeedStoreTests: XCTestCase {
         try! "invalid data".write(to: storeURL, atomically: false, encoding: .utf8)
         
         expect(sut, toRetrieve: .failure(anyNSError()))
+    }
+    
+    func test_retrieve_hasNoSideEffectsOnFailure() {
+        // given
+        let storeURL = testSpecificStoreURL()
+        let sut = makeSUT(storeURL: storeURL)
+        // when
+        try! "invalid data".write(to: storeURL, atomically: false, encoding: .utf8)
+        
+        expect(sut, toRetrieveTwice: .failure(anyNSError()))
     }
     
     // MARK: - Helpers
