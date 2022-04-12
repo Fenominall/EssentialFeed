@@ -77,11 +77,11 @@ extension LocalFeedLoader {
     public func validateCache() {
         store.retrieve { [weak self] result in
             guard let self = self else { return }
-            
+
             switch result {
             case .failure(_):
                 self.store.deleteCachedFeed { _ in }
-                
+
             case let .found(_, timestamp) where !FeedCachePolicy.validate(timestamp, against: self.currentDate()):
                 self.store.deleteCachedFeed { _ in }
                 

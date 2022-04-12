@@ -9,6 +9,7 @@ import Foundation
 
 // Constructor that receives items and maps them into FeedItem
 // The API representation context to hide the knowledge of API from FeedITem
+// Matches the structure of the json
 internal struct RemoteFeedItem: Decodable {
     internal let id: UUID
     internal let description: String?
