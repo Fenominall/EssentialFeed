@@ -18,7 +18,7 @@ class CacheFeedUseCaseTests: XCTestCase {
     // 1. Execute "Save Feed Images" command with above data.
     // 2. System deletes old cache data.
     // 3. System encodes feed images.
-    // 4. System timestaps the new cache.
+    // 4. System timestamps the new cache.
     // 5. System saves new cache data.
     // 6. System delivers success message.
     

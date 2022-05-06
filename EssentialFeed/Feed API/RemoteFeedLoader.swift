@@ -54,22 +54,9 @@ private extension Array where Element == RemoteFeedItem {
     func toModels() -> [FeedImage] {
         return map {
             FeedImage(id: $0.id,
-                     description: $0.description,
-                     location: $0.location,
+                      description: $0.description,
+                      location: $0.location,
                       url: $0.image)
         }
     }
 }
-
-
-//class HTTPClient {
-//    // Step 1: Make the shared instance a variable, so the class can be subleased
-//    static var shared = HTTPClient()
-//
-//    // Step 5: Remove HTTPClient private initializer since it`s not a Singleton anymore.
-//    // private init() {}
-//    // Step 2: Move the test logic from the RemoteFeedLoader to HTTPClient
-//    func get(from url: URL) {
-//    }
-//}
-

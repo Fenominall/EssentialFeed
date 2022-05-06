@@ -9,6 +9,33 @@ import XCTest
 import EssentialFeed
 
 extension FeedStoreSpecs where Self: XCTestCase {
+    
+    func assertThatRetrieveDeliverEmptyOnEmptyCache(on sut: FeedStore, file: StaticString = #file, line: UInt = #line) {
+        expect(sut, toRetrieve: .empty, file: file, line: line)
+    }
+
+    func assertThatRetrieveHanNoSideEffectsOnEmptyCache(on sut: FeedStore, file: StaticString = #file, line: UInt = #line) {
+        expect(sut, toRetrieveTwice: .empty, file: file, line: line)
+    }
+    
+    func assertThatRetrieveDeliversFoundValuesOnNonEmptyCache(on sut: FeedStore, file: StaticString = #file, line: UInt = #line) {
+        let feed = uniqueImageFeed().local
+        let timestamp = Date()
+        
+        insert((feed, timestamp), to: sut)
+        
+        expect(sut, toRetrieve: .found(feed: feed, timestamp: timestamp), file: file, line: line)
+    }
+
+    func assertThatRetrieveHasNoSideEffectsOnNonEmptyCache(on sut: FeedStore, file: StaticString = #file, line: UInt = #line) {
+        assertThatRetrieveDeliversFoundValuesOnNonEmptyCache(on: sut)
+        assertThatRetrieveDeliversFoundValuesOnNonEmptyCache(on: sut)
+    }
+}
+
+
+extension FeedStoreSpecs where Self: XCTestCase {
+    
     @discardableResult
     func insert(_ cache: (feed: [LocalFeedImage], timestamp: Date),
                         to sut: FeedStore,
@@ -67,5 +94,4 @@ extension FeedStoreSpecs where Self: XCTestCase {
         }
         wait(for: [exp], timeout: 1.0)
     }
-    
 }
