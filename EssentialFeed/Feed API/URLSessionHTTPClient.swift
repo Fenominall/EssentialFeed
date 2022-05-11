@@ -5,9 +5,13 @@
 //  Created by Fenominall on 3/23/22.
 //
 
+// using ctrl + shift + | open all windows tab bars
+// option + shift + command + T to rename window tab
+
+
 import Foundation
 
-public class URLSessionHTTPClient: HTTPClient {
+public final class URLSessionHTTPClient: HTTPClient {
     private let session: URLSession
     
     public init(session: URLSession = .shared) {
@@ -24,6 +28,7 @@ public class URLSessionHTTPClient: HTTPClient {
                       let response = response as? HTTPURLResponse {
                 completion(.success((data, response)))
             } else {
+                // Used for any unexpected Errors
                 completion(.failure(UnexpectedValuesRepresentation()))
             }
         }.resume()

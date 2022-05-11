@@ -24,6 +24,8 @@ class URLSessionHTTPClientTests: XCTestCase {
     
     func test_getFromURL_performsGETRequestWithURL() {
         let url = anyURL()
+        
+        // Expectation is used for asynchronous blocks
         let exp = expectation(description: "Wait for request")
         
         URLProtocolStub.observeRequests { request in
@@ -43,7 +45,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         XCTAssertEqual(receivedError?.domain, requestError.domain)
         XCTAssertEqual(receivedError?.code, requestError.code)
     }
-    
+
     func test_getFromURL_failsOnAllInvalidRepresentationCases() {
         XCTAssertNotNil(resultErrorFor(data: nil, response: nil, error: nil))
         XCTAssertNotNil(resultErrorFor(data: nil, response: nonHTTPURLResponse(), error: nil))
@@ -136,6 +138,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         let sut = makeSUT(file: file, line: line)
         let exp = expectation(description: "Wait for completion")
         
+        // Capturing the results in receivedValues as HTTPClientResult so I can return (Error) for failure tests or (Data and HTTPURLResponse) for success case from a factory method.
         var receivedValues: HTTPClientResult!
         sut.get(from: anyURL()) { result in
             receivedValues = result
