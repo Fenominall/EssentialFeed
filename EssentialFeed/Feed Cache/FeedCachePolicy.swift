@@ -14,7 +14,7 @@ internal final class FeedCachePolicy {
     
     // MARK: - Lifecycle
     private init() {}
-    
+            
     // MARK: - Helpers
     private static var maxCacheAgeInDays: Int {
         return 7

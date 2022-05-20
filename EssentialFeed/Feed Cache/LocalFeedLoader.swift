@@ -24,7 +24,7 @@ public final class LocalFeedLoader {
 }
 
 // MARK: - Save Cache
-extension LocalFeedLoader {
+extension LocalFeedLoader { 
     public typealias SaveResult = Error?
     
     public func save(_ feed: [FeedImage],

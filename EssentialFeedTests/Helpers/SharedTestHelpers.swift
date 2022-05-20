@@ -16,3 +16,4 @@ func anyNSError() -> NSError {
 func anyURL() -> URL{
     return URL(string: "https://any-url.com")!
 }
+
